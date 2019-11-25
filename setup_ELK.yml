@@ -1,0 +1,19 @@
+- hosts: elk
+
+  roles:
+   - epel
+   - nginx
+   - firewall
+   - java
+   - elkrepo
+   - elasticsearch
+   - logstash
+   - kibana
+
+- hosts: filebeats
+
+  roles:
+   - epel
+   - elkrepo
+   - filebeats
+

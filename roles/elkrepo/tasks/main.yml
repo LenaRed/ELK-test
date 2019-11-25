@@ -1,0 +1,20 @@
+- name: Copy ElasticSearch yum repo file
+  copy:
+    src=elk.repo
+    dest=/etc/yum.repos.d/elasticsearch.repo
+    owner=root
+    group=root
+    mode=0644
+  become: true
+#/etc/yum.repos.d/elk.repo
+- name: Creates ELK Cert Directory
+  file:
+    path: /etc/beat
+    state: directory
+    mode: 0755
+  become: true
+
+- name: Import ElasticSearch GPG Key
+  rpm_key: key=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state=present
+  become: true

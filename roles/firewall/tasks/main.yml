@@ -1,0 +1,23 @@
+- name: permit port 9200 for elasticsearch 
+  firewalld: 
+    port: 9200/tcp
+    state: enabled
+    permanent: yes
+
+- name: permit port 5044 for logstash
+  firewalld: 
+    port: 5044/tcp
+    state: enabled
+    permanent: yes
+
+- name: permit port 5601 for kibana
+  firewalld: 
+    port: 5601/tcp
+    state: enabled
+    permanent: yes
+
+- name: restart firewalld service
+  systemd:
+    name: firewalld
+    state: restarted
+    

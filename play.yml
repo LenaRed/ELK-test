@@ -1,0 +1,47 @@
+#- hosts: elasticsearch
+#
+#  roles:
+#   - epel
+#   - java
+#   - elkrepo
+#   - elasticsearch
+#   - firewall
+#
+#- hosts: logstash
+#
+#  roles:
+#   - epel
+#   - java
+#   - elkrepo
+#   - firewall
+#   - logstash
+
+#- hosts: kibana
+#
+#  roles:
+#   - epel
+#   - nginx
+#   - firewall
+#   - java
+#   - elkrepo
+#   - kibana
+
+- hosts: elk
+
+  roles:
+   - epel
+   - nginx
+   - firewall
+   - java
+   - elkrepo
+   - elasticsearch
+   - logstash
+   - kibana
+
+- hosts: filebeats
+
+  roles:
+   - epel
+   - elkrepo
+   - filebeats
+

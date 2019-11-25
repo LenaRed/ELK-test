@@ -1,0 +1,70 @@
+#- name: Copy kibana yum repo file
+#  copy:
+#    src=kibana.repo
+#    dest=/etc/yum.repos.d/kibana.repo
+#    owner=root
+#    group=root
+#    mode=0644
+
+- name: Install kibana rpms
+  yum:
+    name: [kibana, unzip]
+
+- name: Copy templated kibana.yml
+  template:
+    src=kibana.yml.j2
+    dest=/etc/kibana/kibana.yml
+    owner=root
+    group=root
+    mode=0644
+  ignore_errors: true
+
+#- name: install pip
+#  yum: 
+#    name: python3-pip
+#
+#- name: Install latest passlib with pip
+#  pip: name=passlib
+
+#- name: Install libsemanage-python and dependencies
+#  yum:
+#    name: libsemanage-python
+
+#- name: Make sure we can use htpasswd module
+#  dnf: "pkg=python-passlib state=installed"
+
+#- name: Create kibana passwd file
+#  template:
+#    src=htpasswd.users.j2
+#    dest=/etc/nginx/htpasswd.users
+#    owner=root
+#    group=root
+#    mode=0644
+  
+#- name: Check kibana users
+#  stat: path=/etc/nginx/htpasswd.users
+#  ignore_errors: true
+#  register: kibana_user_pwfile_exists
+
+#- htpasswd:
+#    path: /etc/nginx/htpasswd.users
+#    name: "{{kibana_user}}"
+#    password: "{{kibana_password}}"
+#    owner: root
+#    mode: 0644
+
+#- name: Create kibana admin user
+#  command: htpasswd -b -c /etc/nginx/htpasswd.users {{kibana_user}} {{kibana_password}}
+#  ignore_errors: true
+#  when: kibana_user_pwfile_exists != 0
+
+- name: Setup kibana service
+  service: name=kibana state=started enabled=true
+
+- name: Start nginx service
+  command: systemctl restart nginx.service
+  ignore_errors: true
+  when: nginx_needs_restart != 0
+
+-  name: Apply SELinux boolean httpd_can_network_connect
+   shell: setsebool httpd_can_network_connect on

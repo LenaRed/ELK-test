@@ -1,0 +1,50 @@
+- name: Install Nginx Web Server
+  yum:
+    name=nginx
+    state=latest
+  when:
+    ansible_distribution == "CentOS"
+  notify:
+    - nginx systemd
+
+- name: Create nginx directory structure
+  file: path=/etc/nginx/conf.d/
+    state=directory
+    mode=0755
+
+- name: Setup nginx reverse proxy for kibana
+  template:
+    src=kibana.conf.j2
+    dest=/etc/nginx/conf.d/kibana.conf
+    owner=root
+    group=root
+    mode=0644
+  register: nginx_needs_restart
+
+- name: Setup nginx TCP/8080 vhost for SSL certificate
+  template:
+    src=nginx.conf.j2
+    dest=/etc/nginx/nginx.conf
+    owner=root
+    group=root
+    mode=0644
+
+- name: Apply SELinux boolean httpd_can_network_connect
+  shell: setsebool httpd_can_network_connect on
+
+- name: Open 80 port on the firewall
+  firewalld:
+    port: 80/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+
+- name: Set nginx to start on boot
+  command: systemctl enable nginx.service
+  ignore_errors: true
+
+- name: Start NGiNX
+  service:
+    name: nginx
+    state: started
+
